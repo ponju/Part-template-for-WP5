@@ -3,12 +3,23 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin=require("mini-css-extract-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+const { htmlWebpackPluginTemplateCustomizer } = require("template-ejs-loader");
 
 const plugins = [
   new HtmlWebpackPlugin({
     title: "My Website",
     hash: true,
-    template: "./src/pages/index.html",
+    template:htmlWebpackPluginTemplateCustomizer(
+      {
+        templatePath:"./src/pages/index.html",
+        templateEjsLoaderOption:{
+          data:{
+            title:"My Website"
+          }
+        }
+      }
+    )
+    
   }),
   new MiniCssExtractPlugin(),
   new CleanWebpackPlugin()
@@ -39,7 +50,10 @@ module.exports = {
       //htmlのバンドル
       {
         test: /\.html$/,
-        use: "html-loader",
+        use: [
+          "html-loader",
+          "template-ejs-loader"
+        ]
       },
       //scss
       {
