@@ -19,8 +19,14 @@ const plugins = [
         }
       }
     )
-    
-  }),
+  }
+  ),
+  new HtmlWebpackPlugin({
+    inject:false,
+    template:"./src/custom-elements/my-btn/my-btn.html",
+    filename:"/custom-elements/my-btn/my-btn.html"
+  },
+  ),
   new MiniCssExtractPlugin(),
   new CleanWebpackPlugin()
 ];
