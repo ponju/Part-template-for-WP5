@@ -4,32 +4,49 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin=require("mini-css-extract-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const { htmlWebpackPluginTemplateCustomizer } = require("template-ejs-loader");
+const globule=require('globule');
+const rx=require('rxjs');
+
+const SITE_NAME="My Website"
+
+const customElements=globule.find({src:"*.html",srcBase:path.resolve(__dirname,"src/custom-elements"),prefixBase:true,matchBase:true});
+
+const customElementPlugins=customElements.map((fileName)=>{
+  console.log(fileName);
+  return new HtmlWebpackPlugin({
+    title:fileName,
+    hash:true,
+    inject:false,
+    filename:path.resolve("./custom-elements",fileName),
+    template:htmlWebpackPluginTemplateCustomizer(
+      {
+        templatePath:path.resolve("./src/custom-elements",fileName)
+      }
+    )
+  })
+});
 
 const plugins = [
   new HtmlWebpackPlugin({
-    title: "My Website",
+    title: SITE_NAME,
     hash: true,
     template:htmlWebpackPluginTemplateCustomizer(
       {
         templatePath:"./src/pages/index.html",
         templateEjsLoaderOption:{
           data:{
-            title:"My Website"
+            title:SITE_NAME
           }
         }
       }
     )
   }
   ),
-  new HtmlWebpackPlugin({
-    inject:false,
-    template:"./src/custom-elements/my-btn/my-btn.html",
-    filename:"/custom-elements/my-btn/my-btn.html"
-  },
-  ),
   new MiniCssExtractPlugin(),
   new CleanWebpackPlugin()
 ];
+
+customElementPlugins.every(p=>plugins.push(p));
 
 module.exports = {
   //jsファイルのエントリーポイント。のちのちtsに変更
